@@ -18,7 +18,7 @@ files.forEach((fileName) => {
   lines = lines.map((line, index) => {
     let x = line.split(' ')
     let prefix = x.slice(0, 6)
-    let suffix = x.slice(6, 13).join(' ')
+    let suffix = x.slice(6, 14).join(' ')
     prefix.push(suffix)
     prefix.unshift(index + 1)
     return prefix
