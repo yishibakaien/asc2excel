@@ -2,31 +2,32 @@ const fs = require('fs')
 const xlsx = require('node-xlsx')
 const path = require('path')
 
-const sourceFilesDir = path.join(__dirname, './source')
+const sourceFilesDir = path.join(__dirname, './source/')
 const outputFileDir = path.join(__dirname, './output/')
 
 const files = fs.readdirSync(sourceFilesDir)
 
 files.forEach((fileName) => {
   const pwd = path.resolve(sourceFilesDir, fileName)
-  const fileText = fs.readFileSync(pwd, 'utf8').toString()
+  const fileString = fs.readFileSync(pwd, 'utf8').toString()
 
-  let lines = fileText.split('\n')
+  const lines = fileString.split('\n')
 
-  lines = lines.slice(3)
+  // 前三行为文件描述
+  const fileDescLines = lines.slice(0, 3).map((line) => [line])
 
-  lines = lines.map((line, index) => {
-    let x = line.split(' ')
-    let prefix = x.slice(0, 6)
-    let suffix = x.slice(6, 14).join(' ')
-    prefix.push(suffix)
-    prefix.unshift(index + 1)
-    return prefix
+  const contentLines = lines.slice(3).map((line, index) => {
+    const frontPart = line.split(' ').slice(0, 6)
+    const endPart = line.slice(6)
+
+    // 这里序号转为 String 可以让序号内容在单元格中左对齐
+    return [String(index + 1), ...frontPart, endPart]
   })
 
   const data = [
     {
       data: [
+        ...fileDescLines,
         [
           '序号',
           '时间标识',
@@ -37,7 +38,7 @@ files.forEach((fileName) => {
           '长度',
           '数据',
         ],
-        ...lines,
+        ...contentLines,
       ],
     },
   ]
